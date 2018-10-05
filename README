@@ -1,3 +1,5 @@
 Branch-free saturating arithmetic.
 Check out https://locklessinc.com/articles/sat_arithmetic/ for details.
 I just put it all in one file for easy reference.
+
+Don't bother compiling with -Wconversion, it's really just a big mess.

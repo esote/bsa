@@ -2,6 +2,7 @@ f_debug := -g
 
 f_base := -Wall \
 			-Wextra \
+			-Wconversion \
 			-pedantic \
 			-lcheck
 
@@ -22,5 +23,5 @@ t_name := check_bsa
 o_name := test
 
 test:
-	@$(GCC) -o $(o_name).out $(t_name).c
+	@$(GCC) -o $(o_name).out $(t_name).c $(h_name).c
 	@./$(o_name).out

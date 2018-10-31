@@ -3,6 +3,7 @@
 #include <check.h>
 #include <limits.h>
 #include <stdlib.h>
+
 #include "bsa.h"
 
 /* unsigned 32-bit */
@@ -79,28 +80,28 @@ START_TEST (test_muls32) {
 /* signed 64-bit */
 
 START_TEST (test_adds64) {
-	ck_assert(adds64(-3, 15) == 12);
-	ck_assert(adds64(-2, LONG_MIN) == LONG_MIN);
-	ck_assert(adds64(5, LONG_MAX - 3) == LONG_MAX);
+	ck_assert(adds64(-3L, 15L) == 12L);
+	ck_assert(adds64(-2L, LONG_MIN) == LONG_MIN);
+	ck_assert(adds64(5L, LONG_MAX - 3L) == LONG_MAX);
 } END_TEST
 
 START_TEST (test_subs64) {
-	ck_assert(subs64(3, -15) == 18);
-	ck_assert(subs64(LONG_MIN + 2, 3) == LONG_MIN);
-	ck_assert(subs64(LONG_MAX - 3, -5) == LONG_MAX);
+	ck_assert(subs64(3L, -15L) == 18L);
+	ck_assert(subs64(LONG_MIN + 2L, 3L) == LONG_MIN);
+	ck_assert(subs64(LONG_MAX - 3L, -5L) == LONG_MAX);
 } END_TEST
 
 START_TEST (test_divs64) {
-	ck_assert(divs64(15, -3) == -5);
+	ck_assert(divs64(15L, -3L) == -5L);
 	/* only case where it can overflow */
-	ck_assert(divs64(LONG_MIN, -1) == LONG_MAX);
+	ck_assert(divs64(LONG_MIN, -1L) == LONG_MAX);
 } END_TEST
 
 START_TEST (test_muls64) {
-	ck_assert(muls64(-15, 3) == -45);
-	ck_assert(muls64(LONG_MIN, 2) == LONG_MIN);
-	ck_assert(muls64(LONG_MAX, 2) == LONG_MAX);
-	ck_assert(muls64(LONG_MAX, -2) == LONG_MIN);
+	ck_assert(muls64(-15L, 3L) == -45L);
+	ck_assert(muls64(LONG_MIN, 2L) == LONG_MIN);
+	ck_assert(muls64(LONG_MAX, 2L) == LONG_MAX);
+	ck_assert(muls64(LONG_MAX, -2L) == LONG_MIN);
 } END_TEST
 
 Suite * bsa_suite(void) {

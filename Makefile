@@ -1,9 +1,12 @@
 f_debug := -g
 
 f_base := -Wall \
-			-Wextra \
 			-Wconversion \
+			-Wextra \
 			-pedantic \
+			-pedantic-errors \
+			-Wpedantic \
+			-Wformat=2 \
 			-lcheck
 
 f_suggest := -Wsuggest-attribute=pure \
@@ -13,10 +16,7 @@ f_suggest := -Wsuggest-attribute=pure \
 
 f_std := -std=c99
 
-f_sec := -Wformat-security \
-			-Wstack-protector
-
-GCC := gcc $(f_debug) $(f_base) $(f_suggest) $(f_std) $(f_sec)
+GCC := gcc $(f_debug) $(f_base) $(f_suggest) $(f_std)
 
 h_name := bsa
 t_name := check_bsa

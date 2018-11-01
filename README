@@ -1,7 +1,5 @@
 Branch-free saturating arithmetic.
 
-Now in a single header, with unit testing!
-
-Just `#include "bsa.h"`.
+Now as a library, with unit testing!
 
 Check out https://locklessinc.com/articles/sat_arithmetic/ for cool details.

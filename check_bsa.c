@@ -141,6 +141,9 @@ int main(void) {
 	Suite *const s = bsa_suite();
 	SRunner *const sr = srunner_create(s);
 
+	// otherwise valgrind complains
+	srunner_set_fork_status(sr, CK_NOFORK);
+
 	srunner_run_all(sr, CK_NORMAL);
 
 	int const number_failed = srunner_ntests_failed(sr);

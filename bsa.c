@@ -85,7 +85,7 @@ signed subs32(signed const x, signed const y) {
 		res = ux;
 	}
 
-	return (signed)res;
+	return (signed) res;
 }
 
 signed divs32(signed x, signed const y) {
@@ -142,7 +142,7 @@ signed long subs64(signed long const x, signed long const y) {
 
 signed long divs64(signed long x, signed long const y) {
 	/* only one way to overflow */
-	x += (signed long) !(bool) ((unsigned )(y + 1) | (unsigned) (x + LONG_MIN));
+	x += (signed long) !(bool) ((unsigned) (y + 1) | (unsigned) (x + LONG_MIN));
 	return x / y;
 }
 

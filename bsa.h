@@ -4,28 +4,62 @@ underflowing. */
 #ifndef BSA_H
 #define BSA_H
 
-/* unsigned 32-bit */
-unsigned addu32(unsigned const, unsigned const);
-unsigned subu32(unsigned const, unsigned const);
-unsigned divu32(unsigned const, unsigned const);
-unsigned mulu32(unsigned const, unsigned const);
+#include <stdint.h>
 
-/* unsigned 64-bit */
-unsigned long addu64(unsigned long const, unsigned long const);
-unsigned long subu64(unsigned long const, unsigned long const);
-unsigned long divu64(unsigned long const, unsigned long const);
-unsigned long mulu64(unsigned long const, unsigned long const);
+/* Unsigned 8-bit. */
 
-/* signed 32-bit */
-signed adds32(signed const, signed const);
-signed subs32(signed const, signed const);
-signed divs32(signed, signed const);
-signed muls32(signed const, signed const);
+uint8_t addu8(uint8_t const, uint8_t const);
+uint8_t subu8(uint8_t const, uint8_t const);
+uint8_t divu8(uint8_t const, uint8_t const);
+uint8_t mulu8(uint8_t const, uint8_t const);
 
-/* signed 64-bit */
-signed long adds64(signed long const, signed long const);
-signed long subs64(signed long const, signed long const);
-signed long divs64(signed long, signed long const);
-signed long muls64(signed long const, signed long const);
+/* Signed 8-bit. */
+
+int8_t adds8(int8_t const, int8_t const);
+int8_t subs8(int8_t const, int8_t const);
+int8_t divs8(int8_t const, int8_t const);
+int8_t muls8(int8_t const, int8_t const);
+
+/* Unsigned 16-bit. */
+
+uint16_t addu16(uint16_t const, uint16_t const);
+uint16_t subu16(uint16_t const, uint16_t const);
+uint16_t divu16(uint16_t const, uint16_t const);
+uint16_t mulu16(uint16_t const, uint16_t const);
+
+/* Signed 16-bit. */
+
+int16_t adds16(int16_t const, int16_t const);
+int16_t subs16(int16_t const, int16_t const);
+int16_t divs16(int16_t const, int16_t const);
+int16_t muls16(int16_t const, int16_t const);
+
+/* Unsigned 32-bit. */
+
+uint32_t addu32(uint32_t const, uint32_t const);
+uint32_t subu32(uint32_t const, uint32_t const);
+uint32_t divu32(uint32_t const, uint32_t const);
+uint32_t mulu32(uint32_t const, uint32_t const);
+
+/* Signed 32-bit. */
+
+int32_t adds32(int32_t const, int32_t const);
+int32_t subs32(int32_t const, int32_t const);
+int32_t divs32(int32_t const, int32_t const);
+int32_t muls32(int32_t const, int32_t const);
+
+/* Unsigned 64-bit. */
+
+uint64_t addu64(uint64_t const, uint64_t const);
+uint64_t subu64(uint64_t const, uint64_t const);
+uint64_t divu64(uint64_t const, uint64_t const);
+uint64_t mulu64(uint64_t const, uint64_t const);
+
+/* Signed 64-bit. */
+
+int64_t adds64(int64_t const, int64_t const);
+int64_t subs64(int64_t const, int64_t const);
+int64_t divs64(int64_t const, int64_t const);
+int64_t muls64(int64_t const, int64_t const);
 
 #endif /* BSA_H */

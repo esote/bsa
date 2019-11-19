@@ -1,27 +1,20 @@
-f_debug := -g
+LIB=	bsa
+SRCS=	bsa.c
+OBJS=	bsa.o
 
-f_base := -Wall \
-			-Wconversion \
-			-Wextra \
-			-pedantic \
-			-pedantic-errors \
-			-Wpedantic \
-			-Wformat=2 \
-			-lcheck
+CFLAGS=		-Wall -O2 -fPIC
+LDFLAGS=	-Wl,-soname,lib$(LIB).so -Wl,-z,now -Wl,-z,relro
 
-f_suggest := -Wsuggest-attribute=pure \
-					-Wsuggest-attribute=const \
-					-Wsuggest-attribute=noreturn \
-					-Wsuggest-attribute=format
+$(LIB): $(SRCS)
+	$(CC) $(CFLAGS) -c $(SRCS)
+	$(CC) -shared $(LDFLAGS) -o lib$(LIB).so $(OBJS)
 
-f_std := -std=c99
+CHK_PROG=	bsa_check
+CHK_SRCS=	$(SRCS) bsa_check.c
+CHK_FLAGS=	-g -Wall -Wextra -Wconversion -Wundef -Wimplicit -lcheck
 
-GCC := gcc $(f_debug) $(f_base) $(f_suggest) $(f_std)
+$(CHK_PROG): $(CHK_SRCS)
+	$(CC) $(CHK_FLAGS) -o $(CHK_PROG).out $(CHK_SRCS)
 
-h_name := bsa
-t_name := check_bsa
-o_name := test
-
-test:
-	@$(GCC) -o $(o_name).out $(t_name).c $(h_name).c
-	@./$(o_name).out
+clean:
+	rm -f $(CHK_PROG).out $(OBJS) lib$(LIB).so

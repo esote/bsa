@@ -1,162 +1,140 @@
-/* Branchfree saturating arithmetic -- values saturate instead of overflowing or
-underflowing. */
+#include <stdint.h>
 
-#include <stdbool.h>
-#include <limits.h>
-
-#include "bsa.h"
-
-/* unsigned 32-bit */
-
-unsigned addu32(unsigned const x, unsigned const y) {
-	unsigned res = x + y;
-	res |= (unsigned) (-(unsigned) (res < x));
-	return res;
+#define ADDU(N)\
+uint##N##_t addu##N(uint##N##_t const x, uint##N##_t const y)\
+{\
+	uint##N##_t res = (uint##N##_t)(x + y);\
+	res |= (uint##N##_t)(-(res < x));\
+	return res;\
 }
 
-unsigned subu32(unsigned const x, unsigned const y) {
-	unsigned res = x - y;
-	res &= (unsigned) (-(unsigned) (res <= x));
-	return res;
+#define SUBU(N)\
+uint##N##_t subu##N(uint##N##_t const x, uint##N##_t const y)\
+{\
+	uint##N##_t res = (uint##N##_t)(x - y);\
+	res &= (uint##N##_t)(-(res < x));\
+	return res;\
 }
 
-/* no overflow possible */
-unsigned divu32(unsigned const x, unsigned const y) {
-	return x / y;
+#define DIVU(N)\
+uint##N##_t divu##N(uint##N##_t const x, uint##N##_t const y)\
+{\
+	return x / y;\
 }
 
-unsigned mulu32(unsigned const x, unsigned const y) {
-	unsigned long const res = (unsigned long) x * (unsigned long) y;
-	unsigned const hi = (unsigned) (res >> 32);
-	return (unsigned) (res | (unsigned long) (-(unsigned) (bool) hi));
+#define MULU(N, M)\
+uint##N##_t mulu##N(uint##N##_t const x, uint##N##_t const y)\
+{\
+	uint##M##_t const res = (uint##M##_t)((uint##M##_t)x * (uint##M##_t)y);\
+	uint##N##_t const hi = (uint##N##_t)(res >> N);\
+	return (uint##N##_t)(res | (uint##M##_t)(-!!hi));\
 }
 
-/* unsigned 64-bit */
-
-unsigned long addu64(unsigned long const x, unsigned long const y) {
-	unsigned long res = x + y;
-	res |= (unsigned long) (-(unsigned long) (res < x));
-	return res;
+#define ADDS(N)\
+int##N##_t adds##N(int##N##_t const x, int##N##_t const y)\
+{\
+	uint##N##_t ux = (uint##N##_t)x;\
+	uint##N##_t const uy = (uint##N##_t)y;\
+	uint##N##_t res = (uint##N##_t)(ux + uy);\
+	ux = (uint##N##_t)((ux >> (N - 1)) + INT##N##_MAX);\
+	/* cmovns instruction */\
+	if ((int##N##_t)((ux ^ uy) | ~(uy ^ res)) >= 0) {\
+		res = ux;\
+	}\
+	return (int##N##_t)res;\
 }
 
-unsigned long subu64(unsigned long const x, unsigned long const y) {
-	unsigned long res = x - y;
-	res &= (unsigned long) (-(unsigned long) (res <= x));
-	return res;
+#define SUBS(N)\
+int##N##_t subs##N(int##N##_t const x, int##N##_t const y)\
+{\
+	uint##N##_t ux = (uint##N##_t)x;\
+	uint##N##_t const uy = (uint##N##_t)y;\
+	uint##N##_t res = (uint##N##_t)(ux - uy);\
+	ux = (uint##N##_t)((ux >> (N - 1)) + INT##N##_MAX);\
+	if ((int##N##_t) ((ux ^ uy) & (ux ^ res)) < 0) {\
+		res = ux;\
+	}\
+	return (int##N##_t)res;\
 }
 
-/* no overflow possible */
-unsigned long divu64(unsigned long const x, unsigned long const y) {
-	return x / y;
+#define DIVS(N)\
+int##N##_t divs##N(int##N##_t const x, int##N##_t const y)\
+{\
+	int##N##_t const n = (int##N##_t)(x + !((uint##N##_t)(y + 1) | (uint##N##_t)(x + INT##N##_MIN)));\
+	return (int##N##_t)(n / y);\
 }
 
-unsigned long mulu64(unsigned long const x, unsigned long const y) {
+#define MULS(N, M)\
+int##N##_t muls##N(int##N##_t const x, int##N##_t const y)\
+{\
+	int##M##_t res = (int##M##_t)((int##M##_t)x * (int##M##_t)y);\
+	uint##N##_t const res2 = (uint##N##_t)((((uint##N##_t)x ^ (uint##N##_t)y) >> (N - 1)) + INT##N##_MAX);\
+	int##N##_t const hi = (int##N##_t)(res >> N);\
+	int##N##_t const lo = (int##N##_t)res;\
+	if (hi != (lo >> (N-1))) {\
+		res = (int##M##_t)res2;\
+	}\
+	return (int##N##_t)res;\
+}
+
+ADDU(8)
+SUBU(8)
+DIVU(8)
+MULU(8, 16)
+ADDS(8)
+SUBS(8)
+DIVS(8)
+MULS(8, 16)
+
+ADDU(16)
+SUBU(16)
+DIVU(16)
+MULU(16, 32)
+ADDS(16)
+SUBS(16)
+DIVS(16)
+MULS(16, 32)
+
+ADDU(32)
+SUBU(32)
+DIVU(32)
+MULU(32, 64)
+ADDS(32)
+SUBS(32)
+DIVS(32)
+MULS(32, 64)
+
+ADDU(64)
+SUBU(64)
+DIVU(64)
+/* MULU(64, 128) */
+ADDS(64)
+SUBS(64)
+DIVS(64)
+/* MULS(64, 128) */
+
+/* Specialized 64-bit multiplication with __{u}int128_t. */
+
+#ifdef __SIZEOF_INT128__
+
+uint64_t mulu64(uint64_t const x, uint64_t const y) {
 	__uint128_t const res = (__uint128_t) x * (__uint128_t) y;
-	unsigned long const hi = (unsigned long) (res >> 64);
-	return (unsigned long) (res | (__uint128_t) (-(unsigned long) (bool) hi));
+	uint64_t const hi = (uint64_t) (res >> 64);
+	return (uint64_t) (res | (__uint128_t) (-!!hi));
 }
 
-/* signed 32-bit */
-
-signed adds32(signed const x, signed const y) {
-	unsigned ux = (unsigned) x;
-	unsigned const uy = (unsigned) y;
-	unsigned res = ux + uy;
-
-	ux = (ux >> 31) + INT_MAX;
-
-	/* cmovns instruction */
-	if ((signed) ((ux ^ uy) | ~(uy ^ res)) >= 0) {
-		res = ux;
-	}
-
-	return (signed) res;
-}
-
-signed subs32(signed const x, signed const y) {
-	unsigned ux = (unsigned) x;
-	unsigned const uy = (unsigned) y;
-	unsigned res = ux - uy;
-
-	ux = (ux >> 31) + INT_MAX;
-
-	/* cmovns instruction */
-	if ((signed) ((ux ^ uy) & (ux ^ res)) < 0) {
-		res = ux;
-	}
-
-	return (signed) res;
-}
-
-signed divs32(signed x, signed const y) {
-	/* only one way to overflow */
-	x += (signed) !(bool) ((unsigned) (y + 1) | (unsigned) (x + INT_MIN));
-	return x / y;
-}
-
-signed muls32(signed const x, signed const y) {
-	signed long res = (signed long) x * (signed long) y;
-	unsigned const res2 = (((unsigned) x ^ (unsigned) y) >> 31) + INT_MAX;
-
-	signed const hi = (signed) (res >> 32);
-	signed const lo = (signed) res;
-
-	if(hi != (lo >> 31)) {
-		res = (signed long) res2;
-	}
-
-	return (signed) res;
-}
-
-/* signed 64-bit */
-
-signed long adds64(signed long const x, signed long const y) {
-	unsigned long ux = (unsigned long) x;
-	unsigned long const uy = (unsigned long) y;
-	unsigned long res = ux + uy;
-
-	ux = (ux >> 63) + LONG_MAX;
-
-	/* cmovns instruction */
-	if ((signed long) ((ux ^ uy) | ~(uy ^ res)) >= 0) {
-		res = ux;
-	}
-
-	return (signed long) res;
-}
-
-signed long subs64(signed long const x, signed long const y) {
-	unsigned long ux = (unsigned long) x;
-	unsigned long const uy = (unsigned long) y;
-	unsigned long res = ux - uy;
-
-	ux = (ux >> 63) + LONG_MAX;
-
-	/* cmovns instruction */
-	if ((signed long) ((ux ^ uy) & (ux ^ res)) < 0) {
-		res = ux;
-	}
-
-	return (signed long) res;
-}
-
-signed long divs64(signed long x, signed long const y) {
-	/* only one way to overflow */
-	x += (signed long) !(bool) ((unsigned) (y + 1) | (unsigned) (x + LONG_MIN));
-	return x / y;
-}
-
-signed long muls64(signed long const x, signed long const y) {
+int64_t muls64(int64_t const x, int64_t const y) {
 	__int128_t res = (__int128_t) x * (__int128_t) y;
-	unsigned long const res2 = (((unsigned long) x ^ (unsigned long) y) >> 63)
-		+ LONG_MAX;
+	uint64_t const res2 = (((uint64_t) x ^ (uint64_t) y) >> 63) + INT64_MAX;
 
-	signed long const hi = (signed long) (res >> 64);
-	signed long const lo = (signed long) res;
+	int64_t const hi = (int64_t) (res >> 64);
+	int64_t const lo = (int64_t) res;
 
 	if (hi != (lo >> 63)) {
 		res = (__int128_t) res2;
 	}
 
-	return (signed long) res;
+	return (int64_t) res;
 }
+
+#endif

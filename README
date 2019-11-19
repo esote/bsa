@@ -1,4 +1,5 @@
 BSA is a branch-free saturating arithmetic library for unsigned and signed 8,
 16, and 32, and 64-bit addition, subtraction, division, and multiplication.
 
-Check out https://locklessinc.com/articles/sat_arithmetic/ for cool details.
+See https://web.archive.org/web/20190508142849/https://locklessinc.com/articles/sat_arithmetic/
+for the original inspiration on the topic of branch-free saturating arithmetic.
